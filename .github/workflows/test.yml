@@ -1,15 +1,49 @@
-name: Testler
+name: Test ve APK
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
-      - run: dart pub get
-      - run: dart analyze
-      - run: dart test
+      - name: Kodu indir
+        uses: actions/checkout@v4
+
+      - name: Java kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter kur
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Android proje dosyalarını oluştur
+        run: flutter create . --platforms=android --project-name encryption_lab --org com.eylulerdogan
+
+      - name: Uygulamanın telefonda görünen adını ayarla
+        run: sed -i 's/android:label="encryption_lab"/android:label="Encryption Lab"/' android/app/src/main/AndroidManifest.xml
+
+      - name: Paketleri indir
+        run: flutter pub get
+
+      - name: Kodu kontrol et
+        run: flutter analyze --no-fatal-infos
+
+      - name: Testleri çalıştır
+        run: flutter test
+
+      - name: APK oluştur
+        run: flutter build apk --release
+
+      - name: APK'yı indirilebilir yap
+        uses: actions/upload-artifact@v4
+        with:
+          name: encryption-lab-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
