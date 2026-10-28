@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'src/ui/caesar_screen.dart';
+import 'src/ui/home_shell.dart';
+import 'src/ui/theme.dart';
 
 /// Uygulamanın başladığı yer.
 void main() => runApp(const EncryptionLabApp());
 
-/// Uygulamanın kendisi: renkleri, başlığı ve açılış ekranını belirler.
+/// Uygulamanın kendisi: temayı ve açılış ekranını belirler.
 class EncryptionLabApp extends StatelessWidget {
   const EncryptionLabApp({super.key});
 
@@ -14,14 +15,8 @@ class EncryptionLabApp extends StatelessWidget {
     return MaterialApp(
       title: 'Encryption Lab',
       debugShowCheckedModeBanner: false,
-      // Telefon açık temadaysa açık, koyu temadaysa koyu renkler kullanılır.
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-      darkTheme: ThemeData(
-        colorSchemeSeed: Colors.indigo,
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
-      home: const CaesarScreen(),
+      theme: Hacker.theme(),
+      home: const HomeShell(),
     );
   }
 }

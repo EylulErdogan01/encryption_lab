@@ -1,55 +1,94 @@
 import 'package:encryption_lab/main.dart';
+import 'package:encryption_lab/src/ui/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Sonuç kutusunda yazan metni okur.
-String resultText(WidgetTester tester) =>
-    tester.widget<SelectableText>(find.byKey(const Key('result'))).data!;
+// Not: Başlıktaki imleç sürekli yanıp söndüğü için pumpAndSettle()
+// hiç bitmez. Onun yerine pump() ile ekranı belli bir süre ilerletiyoruz.
+
+/// Bir ScrambleText'in animasyon bitince göstereceği yazı.
+String outputOf(WidgetTester tester, String key) =>
+    tester.widget<ScrambleText>(find.byKey(Key(key))).text;
+
+/// Anahtar kadranında görünen sayı.
+String keyValueOf(WidgetTester tester, String prefix) =>
+    tester.widget<Text>(find.byKey(Key('$prefix-key-value'))).data!;
 
 void main() {
-  testWidgets('açılışta anahtar 3 ve boş sonuç', (tester) async {
-    await tester.pumpWidget(const EncryptionLabApp());
+  group('LAB', () {
+    testWidgets('yazılan metni anahtar 3 ile şifreler', (tester) async {
+      await tester.pumpWidget(const EncryptionLabApp());
 
-    expect(find.text('3'), findsWidgets);
-    expect(resultText(tester), '—');
+      await tester.enterText(find.byKey(const Key('lab-input')), 'Hello');
+      await tester.pump();
+
+      expect(outputOf(tester, 'lab-output'), 'Khoor');
+    });
+
+    testWidgets('ÇÖZ seçilince şifreyi çözer', (tester) async {
+      await tester.pumpWidget(const EncryptionLabApp());
+
+      await tester.tap(find.byKey(const Key('mode-decrypt')));
+      await tester.enterText(find.byKey(const Key('lab-input')), 'Khoor');
+      await tester.pump();
+
+      expect(outputOf(tester, 'lab-output'), 'Hello');
+    });
+
+    testWidgets('oklar anahtarı değiştirir, 0 dan geri gidince 25 olur',
+        (tester) async {
+      await tester.pumpWidget(const EncryptionLabApp());
+      await tester.enterText(find.byKey(const Key('lab-input')), 'a');
+
+      await tester.tap(find.byKey(const Key('lab-key-up')));
+      await tester.pump();
+      expect(keyValueOf(tester, 'lab'), '04');
+      expect(outputOf(tester, 'lab-output'), 'e');
+
+      for (var i = 0; i < 5; i++) {
+        await tester.tap(find.byKey(const Key('lab-key-down')));
+        await tester.pump();
+      }
+      expect(keyValueOf(tester, 'lab'), '25');
+      expect(outputOf(tester, 'lab-output'), 'z');
+    });
   });
 
-  testWidgets('yazılan metni anında şifreler', (tester) async {
-    await tester.pumpWidget(const EncryptionLabApp());
+  group('GÖREVLER', () {
+    testWidgets('doğru anahtar bulununca erişim sağlanır', (tester) async {
+      await tester.pumpWidget(const EncryptionLabApp());
 
-    await tester.enterText(find.byKey(const Key('textField')), 'Hello');
-    await tester.pump();
+      await tester.tap(find.byKey(const Key('tab-missions')));
+      await tester.pump();
+      expect(find.text('ERİŞİM SAĞLANDI'), findsNothing);
 
-    expect(resultText(tester), 'Khoor');
-  });
+      // 1. görevin anahtarı 3: üç kez artır.
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.byKey(const Key('mission-key-up')));
+        await tester.pump();
+      }
 
-  testWidgets('Çöz seçilince şifreyi çözer', (tester) async {
-    await tester.pumpWidget(const EncryptionLabApp());
+      expect(outputOf(tester, 'mission-output'), 'HELLO WORLD');
+      expect(find.text('ERİŞİM SAĞLANDI'), findsOneWidget);
+      expect(find.text('Anahtar 3, 3 denemede bulundu.'), findsOneWidget);
+    });
 
-    await tester.tap(find.text('Çöz'));
-    await tester.enterText(find.byKey(const Key('textField')), 'Khoor');
-    await tester.pump();
+    testWidgets('sonraki göreve geçince sayaçlar sıfırlanır', (tester) async {
+      await tester.pumpWidget(const EncryptionLabApp());
+      await tester.tap(find.byKey(const Key('tab-missions')));
+      await tester.pump();
 
-    expect(resultText(tester), 'Hello');
-  });
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.byKey(const Key('mission-key-up')));
+        await tester.pump();
+      }
+      await tester.ensureVisible(find.byKey(const Key('mission-next')));
+      await tester.tap(find.byKey(const Key('mission-next')));
+      await tester.pump();
 
-  testWidgets('+ butonu anahtarı bir artırır', (tester) async {
-    await tester.pumpWidget(const EncryptionLabApp());
-
-    await tester.enterText(find.byKey(const Key('textField')), 'a');
-    await tester.tap(find.byTooltip('Anahtarı artır'));
-    await tester.pump();
-
-    expect(resultText(tester), 'e'); // a + 4 = e
-  });
-
-  testWidgets('geçersiz anahtarda uyarı gösterir', (tester) async {
-    await tester.pumpWidget(const EncryptionLabApp());
-
-    await tester.enterText(find.byKey(const Key('keyField')), 'abc');
-    await tester.pump();
-
-    expect(find.text('Bir tam sayı girin (ör. 3, -5)'), findsOneWidget);
-    expect(resultText(tester), '—');
+      expect(find.textContaining('GÖREV 2/'), findsOneWidget);
+      expect(keyValueOf(tester, 'mission'), '00');
+      expect(find.text('DENEME: 0'), findsOneWidget);
+    });
   });
 }

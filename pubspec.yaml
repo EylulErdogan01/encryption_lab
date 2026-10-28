@@ -1,6 +1,6 @@
 name: encryption_lab
 description: Şifreleme algoritmalarını basitçe anlatan ve deneten eğitim uygulaması.
-version: 0.2.0+2
+version: 0.3.0+3
 publish_to: none
 
 environment:
@@ -17,3 +17,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Terminal görünümü için yazı tipi (SIL Open Font License, bkz. assets/fonts/OFL.txt)
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700

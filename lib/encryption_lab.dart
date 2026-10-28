@@ -5,3 +5,4 @@ library;
 
 export 'src/ciphers/caesar.dart';
 export 'src/input.dart';
+export 'src/missions.dart';

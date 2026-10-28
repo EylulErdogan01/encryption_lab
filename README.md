@@ -3,13 +3,22 @@
 Şifreleme algoritmalarını basitçe anlatan ve denemeyi sağlayan bir uygulama.
 Sürüm sürüm geliştiriliyor; hedef, Flutter ile Android (Google Play) uygulaması.
 
+- **LAB:** Mesajını yaz, anahtarı seç, şifreli hâlini anında gör.
+- **GÖREVLER:** Ele geçirilen şifreli mesajların anahtarını bul, sistemi kır.
+
+| LAB | | GÖREVLER | |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/lab-1.png" alt="LAB: mesaj ve anahtar" width="200"> | <img src="docs/screenshots/lab-2.png" alt="LAB: şifreli çıktı" width="200"> | <img src="docs/screenshots/missions-1.png" alt="GÖREVLER: ele geçirilen mesaj" width="200"> | <img src="docs/screenshots/missions-2.png" alt="GÖREVLER: erişim sağlandı" width="200"> |
+| Mesajını yaz, anahtarı seç | Şifreli çıktı | Ele geçirilen mesaj | Erişim sağlandı |
+
 ## Durum
 
 | Sürüm | İçerik | Durum |
 |-------|--------|-------|
 | v0.1 | Sezar şifrelemesi (terminal) | ✅ Tamamlandı |
-| v0.2 | Flutter arayüzü, Android APK | 🚧 Geliştiriliyor |
-| v0.3 | Türkçe alfabe desteği | Planlandı |
+| v0.2 | Flutter arayüzü, Android APK | ✅ Tamamlandı |
+| v0.3 | Hacker teması, GÖREVLER oyunu | ✅ Tamamlandı |
+| v0.4 | Türkçe alfabe desteği | Planlandı |
 | v1.0 | Google Play yayını | Planlandı |
 | sonra | Vigenère ve diğer algoritmalar | Planlandı |
 
@@ -37,14 +46,21 @@ bin/
   encryption_lab.dart        # Terminal menüsü
 lib/
   main.dart                  # Flutter uygulamasının giriş noktası
-  src/ui/caesar_screen.dart  # Sezar ekranı
+  src/missions.dart          # Görev listesi
+  src/ui/theme.dart          # Renkler ve tema
+  src/ui/widgets.dart        # Ortak parçalar (panel, kadran, animasyon)
+  src/ui/home_shell.dart     # Başlık ve alt sekmeler
+  src/ui/caesar_screen.dart  # LAB ekranı
+  src/ui/missions_screen.dart # GÖREVLER ekranı
   encryption_lab.dart        # Kütüphanenin dışa açılan kısmı
   src/ciphers/caesar.dart    # Sezar algoritması (arayüzden bağımsız)
   src/input.dart             # Giriş kontrolü
 test/
   caesar_test.dart           # Algoritma testleri
   input_test.dart            # Giriş kontrolü testleri
+  missions_test.dart         # Görev testleri
   widget_test.dart           # Ekran testleri
+assets/fonts/                # JetBrains Mono yazı tipi
 ```
 
 Algoritmalar arayüzden bağımsız saf Dart kodudur. Böylece aynı kod hem
@@ -70,3 +86,7 @@ flutter run                        # uygulamayı başlat
 flutter test                       # testleri çalıştır
 dart run                           # terminal sürümü
 ```
+
+## Lisanslar
+
+JetBrains Mono yazı tipi [SIL Open Font License 1.1](assets/fonts/OFL.txt) ile kullanılmaktadır.
